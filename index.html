@@ -1,61 +1,113 @@
+```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>202603レポート文章見本</title>
-    <style>
-        body { font-family: sans-serif; line-height: 1.6; padding: 10px; margin: 0; color: #333; }
-        #page-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; }
-        .image-container { text-align: center; margin-bottom: 15px; }
-        img { max-width: 100%; height: auto; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>レポート一覧</title>
 
-        /* preタグでスペースと改行を保持しつつ、画面端で折り返す設定 */
-        #text-content { 
-            white-space: pre-wrap;      /* スペースを維持しつつ折り返す */
-            overflow-wrap: break-word;
-            word-break: break-all;
-            background: #f6f8fa;
-            padding: 15px;
-            border: 1px solid #d0d7de;
-            font-size: 16px;
-            font-family: inherit;      /* フォントをbodyと共通にする */
-            margin: 0;
-        }
-    </style>
+<style>
+body {
+    font-family: sans-serif;
+    line-height: 1.6;
+    padding: 10px;
+    margin: 0;
+    color: #333;
+}
+
+.section {
+    margin-bottom: 40px;
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.image-container {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.text-content {
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: break-all;
+    background: #f6f8fa;
+    padding: 15px;
+    border: 1px solid #d0d7de;
+    font-size: 16px;
+}
+</style>
 </head>
+
 <body>
 
-    <div id="page-title"></div>
+<div id="container"></div>
 
-    <div class="image-container">
-        <img src="202603.png" alt="202603">
-    </div>
+<script>
+// 表示する年月（追加するだけで増える）
+const files = ['202603', '202602'];
 
-    <pre id="text-content">読み込み中...</pre>
+const container = document.getElementById('container');
 
-    <script>
-        const targetFile = '202603.txt';
-        
-        fetch(targetFile)
-            .then(response => response.ok ? response.text() : 'ファイルが見つかりません')
-            .then(data => {
-                const lines = data.split(/\r?\n/);
-                let firstLine = lines[0];
+files.forEach(file => {
 
-                if (firstLine.startsWith('#')) {
-                    document.getElementById('page-title').textContent = firstLine.replace('#', '').trim();
-                    // 2行目以降（本文）を表示。trimせずそのまま渡すことで先頭の空白を維持
-                    document.getElementById('text-content').textContent = lines.slice(1).join('\n');
-                } else {
-                    document.getElementById('page-title').textContent = '';
-                    document.getElementById('text-content').textContent = data;
-                }
-            })
-            .catch(() => {
-                document.getElementById('text-content').textContent = 'エラーが発生しました';
-            });
-    </script>
+    // セクション
+    const section = document.createElement('div');
+    section.className = 'section';
+
+    // タイトル
+    const title = document.createElement('div');
+    title.className = 'page-title';
+    title.textContent = file;
+    section.appendChild(title);
+
+    // 画像
+    const imgContainer = document.createElement('div');
+    imgContainer.className = 'image-container';
+
+    const img = document.createElement('img');
+    img.src = file + '.png';
+    img.alt = file;
+
+    imgContainer.appendChild(img);
+    section.appendChild(imgContainer);
+
+    // テキスト
+    const text = document.createElement('pre');
+    text.className = 'text-content';
+    text.textContent = '読み込み中...';
+    section.appendChild(text);
+
+    container.appendChild(section);
+
+    // テキスト読み込み
+    fetch(file + '.txt')
+        .then(res => res.ok ? res.text() : 'ファイルが見つかりません')
+        .then(data => {
+            const lines = data.split(/\r?\n/);
+            const firstLine = lines[0];
+
+            if (firstLine.startsWith('#')) {
+                title.textContent = firstLine.replace('#', '').trim();
+                text.textContent = lines.slice(1).join('\n');
+            } else {
+                text.textContent = data;
+            }
+        })
+        .catch(() => {
+            text.textContent = 'エラーが発生しました';
+        });
+});
+</script>
 
 </body>
 </html>
+```
