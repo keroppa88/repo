@@ -1,0 +1,27 @@
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>202603</title>
+</head>
+<body>
+    <h1>202603</h1>
+
+    <pre id="content"></pre>
+
+    <img src="202603.png" alt="202603">
+
+    <script>
+        // 表示したいファイル名を指定
+        const fileName = '202603.txt'; 
+
+        fetch(fileName)
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('content').textContent = data;
+            })
+            .catch(error => {
+                console.error('ファイルの読み込みに失敗しました:', error);
+            });
+    </script>
+</body>
+</html>
