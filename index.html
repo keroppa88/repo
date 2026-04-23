@@ -7,15 +7,18 @@
     <style>
         body { font-family: sans-serif; line-height: 1.6; padding: 10px; margin: 0; color: #333; }
         
-        /* 画像：先頭配置、画面幅に合わせる */
+        /* 題名（太字）のスタイル */
+        #page-title { font-size: 24px; font-weight: bold; margin-bottom: 15px; }
+
+        /* 画像：先頭 */
         .image-container { text-align: center; margin-bottom: 15px; }
         img { max-width: 100%; height: auto; }
 
-        /* テキスト：画面端で強制的に折り返す設定 */
+        /* 本文：画面端で折り返し */
         #text-content { 
-            white-space: pre-wrap;      /* 改行を維持しつつ折り返す */
-            overflow-wrap: break-word; /* 長い単語を端で折る */
-            word-break: break-all;     /* 英数字なども含め確実に端で折る */
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+            word-break: break-all;
             background: #f6f8fa;
             padding: 15px;
             border: 1px solid #d0d7de;
@@ -25,6 +28,8 @@
 </head>
 <body>
 
+    <div id="page-title"></div>
+
     <div class="image-container">
         <img src="202603.png" alt="202603">
     </div>
@@ -33,10 +38,22 @@
 
     <script>
         const targetFile = '202603.txt';
+        
         fetch(targetFile)
             .then(response => response.ok ? response.text() : 'ファイルが見つかりません')
             .then(data => {
-                document.getElementById('text-content').textContent = data;
+                const lines = data.split('\n');
+                let firstLine = lines[0];
+                let restText = lines.slice(1).join('\n');
+
+                // 最初の行が # で始まる場合、それを太字タイトルにする
+                if (firstLine.startsWith('#')) {
+                    document.getElementById('page-title').textContent = firstLine.replace('#', '').trim();
+                    document.getElementById('text-content').textContent = restText;
+                } else {
+                    document.getElementById('page-title').textContent = '';
+                    document.getElementById('text-content').textContent = data;
+                }
             })
             .catch(() => {
                 document.getElementById('text-content').textContent = 'エラーが発生しました';
